@@ -1,0 +1,65 @@
+from selenium import webdriver
+
+
+import logging
+import xlwt
+
+
+logger = logging.getLogger(__name__)
+def get_edhdecks_card_list(commandername = 'kaalia-of-the-vast'):
+    global driver   #解决浏览器自动关闭的问题
+    # 新建一个chrome浏览器连接
+    chrome_driver_path = r"D:\Tools\chromedriver.exe"
+    driver = webdriver.Chrome(chrome_driver_path)
+
+    # 等待30S打开，并最大化界面
+    driver.implicitly_wait(20)
+    driver.maximize_window()
+
+    # 打开edh界面
+    driver.get('https://edhrec.com/commanders/' + commandername)
+
+    #切换table_view
+    button1 = driver.find_element_by_xpath("(//*[@class = 'nav-link'])[2]")
+    button1.click()
+
+    # 获取卡名并写入excel
+    work_book = xlwt.Workbook(encoding = 'ascii')
+    work_sheet = work_book.add_sheet('卡名')
+    card_info = driver.find_elements_by_xpath('//table/tbody/tr')
+    card_num = len(card_info)
+    for item1 in range(0,255):
+        xpath_path = "//table/tbody/tr["+str(item1+1)+"]/td[4]//a"
+        card = driver.find_element_by_xpath(xpath_path)
+        card_name = card.get_attribute('textContent')
+        work_sheet.write(item1,0,card_name)
+        print(card_name)
+    work_book.save("指挥官" + commandername +"EDH卡组.xls")
+
+    # 退出浏览器
+    # driver.quit()
+
+
+
+
+
+
+
+
+def get_edhdecks_card_list():
+
+    return
+
+
+
+
+
+
+
+
+
+
+
+
+if __name__ == '__main__':
+    get_edhdecks_card_list()
